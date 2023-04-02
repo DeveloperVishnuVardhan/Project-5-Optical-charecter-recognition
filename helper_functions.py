@@ -251,7 +251,7 @@ def save_results(results: dict, target_dir: str):
         target_dir: target directory of where the text file must be saved.
     """
 
-    file_name = "results.csv"
+    file_name = "results1.csv"
     file_path = os.path.join(target_dir, file_name)
 
     df = pd.DataFrame(results)
