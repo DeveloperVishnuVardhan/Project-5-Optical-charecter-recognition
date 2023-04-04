@@ -8,8 +8,8 @@ This file contains the code to load all
 the dependencies and train the model.
 """
 
-from dataloader import create_dataloaders, get_greekdata
-from models import LeNet
+from dataloader import create_dataloaders, get_greekdata, get_FashionMnist
+from models import LeNet, tinyVgg
 import torch
 from torch import nn
 from tqdm.auto import tqdm
@@ -137,22 +137,26 @@ def fine_tune(train_data: torch.utils.data.DataLoader,
 def main(argv):
     batch_size = int(argv[1])
     epochs = int(argv[2])
-    train_mode = int(argv[3])
-    test_mode = int(argv[4])
-    greek_train = int(argv[5])
+    digit_train_mode = int(argv[3])
+    fashion_train_mode = int(argv[4])
+    test_mode = int(argv[5])
+    greek_train = int(argv[6])
 
-    train_dataloader, test_dataloader, class_names = create_dataloaders(
+    digit_train_dataloader, digit_test_dataloader, digit_class_names = create_dataloaders(
+        batch_size=batch_size)
+    
+    fashion_train_dataloader, fashion_test_dataloader, fashion_class_names = get_FashionMnist(
         batch_size=batch_size)
 
-    if train_mode == 1:
+    if digit_train_mode == 1:
         # Initialize the model
         model = LeNet().to("mps")
         loss = nn.CrossEntropyLoss()
         optim = torch.optim.SGD(params=model.parameters(), lr=0.1)
         torch.manual_seed(42)
         results = train_network(model=model,
-                                train_dataloader=train_dataloader,
-                                test_dataloader=test_dataloader,
+                                train_dataloader=digit_train_dataloader,
+                                test_dataloader=digit_test_dataloader,
                                 optimizer=optim,
                                 loss_fn=loss,
                                 epochs=epochs)
@@ -162,6 +166,26 @@ def main(argv):
         save_model(model, "Models", "base_model.pth")
         # Save the results of model in a text file.
         save_results(results, "Models")
+
+    if fashion_train_mode == 1:
+        torch.manual_seed(42)
+        model2 = tinyVgg(input_shape=1, hidden_units=10, output_shape=len(fashion_class_names)).to("mps")
+        loss = nn.CrossEntropyLoss()
+        optim = torch.optim.SGD(params=model2.parameters(), lr=0.1)
+        results = train_network(model=model2,
+                                train_dataloader=fashion_train_dataloader,
+                                test_dataloader=fashion_test_dataloader,
+                                optimizer=optim,
+                                loss_fn=loss,
+                                epochs=epochs)
+
+        print(results)
+        # Save the model to disk.
+        save_model(model2, "Models", "base_model.pth")
+        # Save the results of model in a text file.
+        save_results(results, "Models")        
+
+
 
     if test_mode == 1:
         # Analyze and plot the results above training mode.
