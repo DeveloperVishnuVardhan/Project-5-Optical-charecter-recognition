@@ -52,10 +52,10 @@ def make_custom_predictions(dir_path: str, model: torch.nn.Module):
     rows, cols = 3, 4
 
     data_transform = torchvision.transforms.Compose([
-    torchvision.transforms.ToTensor(),
-    torchvision.transforms.Normalize(
-        (0.1307, ), (0.3081,))
-])
+        torchvision.transforms.ToTensor(),
+        torchvision.transforms.Normalize(
+            (0.1307, ), (0.3081,))
+    ])
     # Get the count of images in the directory.
     files = os.listdir(dir_path)
     i = 0
@@ -77,9 +77,6 @@ def make_custom_predictions(dir_path: str, model: torch.nn.Module):
     plt.show()
 
 
-
-
-
 # Main functions that takes cmd args and performs predictions.
 def main(argv):
     # load the model
@@ -88,7 +85,7 @@ def main(argv):
     model_path = "Models/base_model.pth"
     model_ = load_model(target_dir=model_path,
                         model=model)  # Load the model with all weights.
-    
+
     # load and get data.
     train_data, test_data, class_names = create_dataloaders(32)
     images, labels = next(iter(test_data))
@@ -110,7 +107,7 @@ def main(argv):
                 f"Original label:{label}, predicted label:{torch.argmax(prediction, dim=1)}")
             print(
                 "--------------------------------------------------------------------------")
-    
+
     make_custom_predictions("custom-data/Mnist", model_)
     # Plot predictions.
     plot_predictions(labels, pred_labels, images, class_names)
