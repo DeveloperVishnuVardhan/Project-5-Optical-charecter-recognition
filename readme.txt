@@ -1,6 +1,6 @@
 Project Members:
-1. Jyothi Vishnu Vardhan Kolla-> Neuid:002752854
-2. Vidya Ganesh->NUID:002766414
+1. Jyothi Vishnu Vardhan Kolla
+2. Vidya Ganesh
 
 * Number of time-travel days used -> 3 days.
 1.Operating System used: Mac OS
