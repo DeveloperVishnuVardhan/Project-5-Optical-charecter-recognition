@@ -9,7 +9,7 @@ the models used in the project.
 """
 
 import torch
-from torch import nn
+from torch import nn, optim
 
 class LeNet(nn.Module):
     """
@@ -52,6 +52,51 @@ class LeNet(nn.Module):
         return nn.functional.log_softmax(x)
 
 
+class fashionModel(nn.Module):
+    def __init__(self, out_channels: int, kernel_size: int, droput_rate: float, hidden_neurons: int): 
+        """
+        Model for training Fashion_MNIST model
+
+        Args:
+            out_channels: Number of channels to use in each filter.
+            kernel_size: Kernel_size in each filter.
+            dropout_rate: dropout_rate to use.
+            hidden_nuerons: number of hidden_neurons to use in each hidden layer.
+        """
+        super().__init__()
+        self.block_1 = nn.Sequential(
+            nn.Conv2d(
+            in_channels=1,
+            out_channels=out_channels,
+            kernel_size=kernel_size),
+            nn.MaxPool2d(kernel_size=2),
+            nn.ReLU()
+        )
+
+        self.block_2 = nn.Sequential(
+            nn.Conv2d(
+            in_channels=out_channels,
+            out_channels=out_channels,
+            kernel_size=kernel_size,
+            ),
+            nn.Dropout2d(droput_rate),
+            nn.MaxPool2d(kernel_size=2),
+            nn.ReLU()
+        )
+
+        self.classifier = nn.Sequential(
+            nn.Flatten(),
+            nn.Linear(in_features=out_channels * 4 * 4, out_features=hidden_neurons),
+            nn.Linear(hidden_neurons, 10)
+        )
+
+    def forward(self, x: torch.Tensor):
+        x = self.block_1(x)
+        x = self.block_2(x)
+        x = self.classifier(x)
+
+        return nn.functional.log_softmax(x)
+
 class tinyVgg(nn.Module):
     """
     Creates a tinyVgg type architecture to
@@ -93,4 +138,6 @@ class tinyVgg(nn.Module):
         x = self.block2(x)
         x = self.classifier(x)
         return x
-    
+
+
+        

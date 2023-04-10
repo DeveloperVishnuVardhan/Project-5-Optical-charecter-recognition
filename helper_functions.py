@@ -120,10 +120,10 @@ def plot_loss_curves(results):
              "test_acc": [...]}
     """
     loss = results["train_loss"]
-    test_loss = results["test_loss"]
+    #test_loss = results["test_loss"]
 
     accuracy = results["train_acc"]
-    test_accuracy = results["test_acc"]
+    #test_accuracy = results["test_acc"]
 
     epochs = range(len(results["train_loss"]))
 
@@ -132,7 +132,7 @@ def plot_loss_curves(results):
     # Plot loss
     plt.subplot(1, 2, 1)
     plt.plot(epochs, loss, label="train_loss")
-    plt.plot(epochs, test_loss, label="test_loss")
+    #plt.plot(epochs, test_loss, label="test_loss")
     plt.title("Loss")
     plt.xlabel("Epochs")
     plt.legend()
@@ -140,7 +140,7 @@ def plot_loss_curves(results):
     # Plot accuracy
     plt.subplot(1, 2, 2)
     plt.plot(epochs, accuracy, label="train_accuracy")
-    plt.plot(epochs, test_accuracy, label="test_accuracy")
+    #plt.plot(epochs, test_accuracy, label="test_accuracy")
     plt.title("Accuracy")
     plt.xlabel("Epochs")
     plt.legend()
@@ -273,3 +273,20 @@ def load_model(target_dir: str, model: torch.nn.Module, device: torch.device = "
     model_.load_state_dict(state_dict)
 
     return model_
+
+
+def plot_six_images(train_data_loader):
+    """
+    This function plots the first 6 Images in the training set.
+
+    Args:
+        train_data_loader: dataloader object containing training data.
+    """
+    images, label = next(iter(train_data_loader))
+    fig = plt.figure(figsize=(8, 8))
+    rows, cols = 3, 2
+    for i in range(6):
+        image = images[i].squeeze()
+        fig.add_subplot(rows, cols, i + 1)
+        plt.imshow(image)
+    plt.show()

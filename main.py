@@ -11,9 +11,9 @@ training and testing data into disk.
 import cv2
 import torchvision
 from helper_functions import load_model
-from dataloader import create_dataloaders
+from dataloader import create_dataloaders, get_FashionMnist
 import torch
-from models import LeNet
+from models import LeNet, tinyVgg
 
 cap = cv2.VideoCapture('/Users/jyothivishnuvardhankolla/Downloads/RPReplay_Final1680647960.MP4')
 
@@ -23,11 +23,19 @@ data_transform = torchvision.transforms.Compose([
         (0.1307, ), (0.3081,))
 ])
 
-# Load the model to use.
-model = LeNet()
-model_path = "Models/base_model.pth"
-model = load_model(target_dir=model_path, model=model)
-train_data, test_data, class_names = create_dataloaders(32)
+# Load the models to use.
+model1 = LeNet()
+model1_path = "Models/base_model.pth"
+model1_ = load_model(target_dir=model1_path, model=model1)
+train_data1, test_data1, class_names1 = create_dataloaders(32)
+
+model2 = tinyVgg(input_shape=1, hidden_units=10, output_shape=10)
+model2_path = "Models/fashion_model.pth"
+model2_ = load_model(target_dir=model2_path, model=model2)
+train_data2, test_data2, class_names2 = get_FashionMnist(32)
+
+digit_mode = 1
+fashion_mode = 0
 
 while True:
     # Capture a frame from the camera.
@@ -42,10 +50,18 @@ while True:
     final_img = data_transform(resized_frame)
     final_img = final_img.unsqueeze(0)
 
-    # Perform predictions.
-    prediction = model(final_img)
-    prediction_label = int(torch.argmax(prediction, dim=1))
-    print(class_names[prediction_label])
+    if digit_mode == 1:
+        # Perform predictions.
+        prediction = model1_(final_img)
+        prediction_label = int(torch.argmax(prediction, dim=1))
+        label = class_names1[prediction_label]
+        print(label)
+
+    if fashion_mode == 1:
+        prediction = model2_(final_img)
+        prediction_label = int(torch.argmax(prediction, dim=1))
+        label = class_names2[prediction_label]
+        print(label)
 
     # Put the live-text on to the video.
     font = cv2.FONT_HERSHEY_SIMPLEX
@@ -54,12 +70,20 @@ while True:
     color = (0, 255, 0)
     thickness = 5
 
-    cv2.putText(frame, class_names[prediction_label], location, font, font_scale, color, thickness)
+    cv2.putText(frame, label, location, font, font_scale, color, thickness)
     
 
     # Display the frame.
     cv2.imshow('Real Time Video', frame)
     k = cv2.waitKey(50)
+    if k == ord('m'):
+        digit_mode = 1
+        fashion_mode = 0
+
+    if k == ord('f'):
+        fashion_mode = 1
+        digit_mode = 0
+
 
 cap.release()
 cv2.destroyAllWindows()

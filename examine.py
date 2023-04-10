@@ -150,7 +150,7 @@ def plot_resnet_filtered_images(conv1_weights, image):
 
     plt.show()
 
-
+# A main function that runs the examination of layers.
 def main(argv):
     examine_custom_model = int(argv[1])
     examine_resnet_model = int(argv[2])
